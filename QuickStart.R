@@ -76,3 +76,104 @@ cor(cars)
 var(cars$speed)
 print(cars)
 print(cars$speed)
+
+#########################################################################
+#########################################################################
+# Practical Session No. 1                                               #
+#########################################################################
+#########################################################################
+
+# Question No. 1
+
+n = 10
+sample_size = rnorm(n,0,1)
+sample_mean = mean(sample_size)
+sample_variance = var(sample_size)
+sample_median = median(sample_size)
+cat("The mean of the sample size is ", sample_mean,
+      "and the variance is", sample_variance)
+
+column_names = c("mean","var","median")
+column_values = c(sample_mean, sample_variance, sample_median)
+
+cat("## Stat Value")
+for (i in 1:3){
+  cat("## ",i,column_names[i], column_values[i],"\n")
+}
+
+# Question No. 2
+dev.off()
+n = 100
+set.seed(123)  # Set seed for reproducibility
+sample_size = rt(n, df = 3)
+hist(sample_size, col=3)
+
+
+# Question No. 3
+dev.off()
+x = c(1:10)
+y = x*x
+plot(x,y)
+
+# Question No. 4
+print(cars$speed)
+print(cars$dist)
+dev.off()
+plot(cars$speed, cars$dist)
+cor(cars$speed, cars$dist, method="spearman")
+min(cars$speed)
+max(cars$speed)
+median(cars$speed)
+y = (median(cars$dist)+3)*10
+mean(y)
+
+
+# Question 5
+x <- c(1,3,5,7)
+y <-c("one","three","five","seven")
+data.frame(x,y)
+
+# Question 6
+nrow(airquality)
+ncol(airquality)
+x <- airquality$Temp
+Month <- airquality$Month
+dev.off()
+boxplot(x~Month)
+
+# Question 7
+y = airquality$Ozone[is.na(airquality$Ozone) == FALSE]
+mean(y)
+median(y)
+min(y)
+max(y)
+sd(y)
+
+w <- c("Mean","Median","Minimum","Maximum","S.D")
+x <- c(mean(y),median(y),min(y),max(y),sd(y))
+data.frame(w,x)
+
+dev.off()
+par(mfrow = c(1, 2))
+hist(y, main="Histogram for Ozone level")
+boxplot(y)
+
+# Question 8
+dev.off()
+Ratio = airquality$Wind/airquality$Temp
+plot(airquality$Day, Ratio, main = "ratio versus day")
+
+# Question 9
+dev.off()
+plot(airquality$Day, Ratio, main = "ratio versus day")
+# Add a horizontal line at y = 0
+abline(h = mean(Ratio), col = "red", lwd = 2) #lty = 2, lwd = 2)
+
+# Question 10
+dev.off()
+sample <-c(1:1000)
+set.seed(123)
+for (i in 1:1000){
+  sample[i] = mean(rbinom(31,1,0.5))  
+}
+hist(sample, nclass = 10)
