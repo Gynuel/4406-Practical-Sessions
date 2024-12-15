@@ -45,10 +45,66 @@ In this question we focus on the player's division at the end of 1986 (the varia
 
 
 ### Solution Q1.1
+```{r}
+division_counts <- table(Hitters$Division)
+print(division_counts)
+```
 ### Solution Q1.2
-### Solution Q1.3
-### Solution Q1.4
+```{r}
+# Calculate median runs for each Division
+median_runs_table <- Hitters %>%
+  group_by(Division) %>%
+  summarize(median_runs = median(Runs, na.rm = TRUE)) %>%
+  as_tibble()
 
+# Print the result
+print(median_runs_table)
+```
+### Solution Q1.3
+```{r}
+wilcox_test <- wilcox.test(Runs ~ Division, data = Hitters, exact = FALSE, na.action = na.omit)
+print(wilcox_test)
+```
+### Solution Q1.4
+```{r}
+# Load required libraries
+library(ggplot2)
+library(gridExtra)
+library(grid)
+
+# Load the dataset
+data(Hitters)
+
+# Remove missing values
+Hitters_clean <- na.omit(Hitters)
+
+# Calculate sample means for each Division
+means <- aggregate(Runs ~ Division, data = Hitters_clean, mean)
+
+# First plot: Boxplot with sample means
+boxplot_plot <- ggplot(Hitters_clean, aes(x = Division, y = Runs)) +
+  geom_boxplot(fill = "grey80", color = "black", outlier.shape = NA, alpha = 0.5) +  # Reduced opacity
+  geom_point(data = means, aes(x = Division, y = Runs), 
+             color = "red", size = 3) +
+  labs(title = "Boxplot of Runs by Division", x = "Division", y = "Runs") +
+  theme_minimal()
+
+# Second plot: Violin plot with sample means
+violin_plot <- ggplot(Hitters_clean, aes(x = Division, y = Runs)) +
+  geom_violin(fill = "lightblue", color = "black", alpha = 0.5) +  # Reduced opacity
+  geom_point(data = means, aes(x = Division, y = Runs), 
+             color = "red", size = 3) +
+  labs(title = "Violin Plot of Runs by Division", x = "Division", y = "Runs") +
+  theme_minimal()
+
+
+# Combine the plots side by side using gridExtra
+grid.arrange(boxplot_plot, violin_plot, ncol = 2)
+
+# Add label to bottom left using grid.text
+grid.text("Figure 1.1", x = 0.1, y = 0.02, gp = gpar(fontsize = 10, fontface = "plain"))
+
+```
 
 
 
@@ -67,11 +123,156 @@ In this question we focus on the variable number of walks in 1986 (the variable 
   
 
 ### Solution Q2.1
-### Solution Q2.2
-### Solution Q2.3
-### Solution Q2.4
-### Solution Q2.5
+```{r}
+# Create a scatterplot between Walks and Runs, disaggregated by Division
+scatterplot <- ggplot(Hitters, aes(x = Walks, y = Runs, color = Division)) +
+  geom_point(size = 1, alpha = 0.8) +  # Add points with specified size
+  scale_color_manual(values = c("E" = "red", "W" = "black")) +  # Color E points red, W points black
+  labs(
+    x = "Walks",
+    y = "Runs",
+    color = "Division"  # Label for the legend
+  ) +
+  theme_minimal() +
+  theme(
+    plot.margin = margin(t = 20, r = 20, b = 50, l = 20),  # Adjust bottom margin to create space for subtitle
+    plot.subtitle = element_text(hjust = 0, vjust = 1, size = 10, face = "plain"),  # Left-align the subtitle
+    plot.caption = element_text(hjust = 0, vjust = 0, size = 10, face = "plain")  # Add custom caption as bottom-left label
+  )
 
+# Add the label "Figure 1.2" using caption (treated as subtitle outside the plot area)
+scatterplot <- scatterplot +
+  labs(caption = "Figure 1.2")  # This moves the label to the bottom-left corner
+
+# Show the plot
+print(scatterplot)
+```
+```{r}
+# Load necessary libraries
+library(ggplot2)
+library(gridExtra)
+library(grid)
+
+# Load the dataset
+data(Hitters)
+Hitters_clean <- na.omit(Hitters)
+
+# Separate data for Division E and Division W
+division_e <- subset(Hitters_clean, Division == "E")
+division_w <- subset(Hitters_clean, Division == "W")
+
+# Create the scatter plot for Division E (blue dots)
+plot_e <- ggplot(division_e, aes(x = Walks, y = Runs)) +
+  geom_point(color = "blue") +  # Blue dots
+  labs(title = "Division E", x = "Walks", y = "Runs") +
+  theme_minimal()
+
+# Create the scatter plot for Division W (red dots)
+plot_w <- ggplot(division_w, aes(x = Walks, y = Runs)) +
+  geom_point(color = "red") +  # Red dots
+  labs(title = "Division W", x = "Walks", y = "Runs") +
+  theme_minimal()
+
+# Create the label for the subtitle, placed at the bottom-left corner with size 10 text
+subtitle <- textGrob("Figure 1.3", gp = gpar(fontsize = 10, fontface = "plain"), just = c("left", "bottom"))
+
+# Arrange the two plots side by side and add the subtitle
+grid.arrange(plot_e, plot_w, ncol = 2)
+grid::grid.text("Figure 1.3", x = unit(0, "npc"), y = unit(0, "npc"), just = c("left", "bottom"), gp = gpar(fontsize = 10))
+
+```
+```{r}
+# Load the dataset
+data(Hitters)
+Hitters_clean <- na.omit(Hitters)
+
+# Create a new column "Division" for plotting purposes
+Hitters_clean$Division <- ifelse(Hitters_clean$Division == "E", "Division E", "Division W")
+
+# Create the scatterplot and separate by Division
+scatterplot <- ggplot(Hitters_clean, aes(x = Walks, y = Runs, color = Division)) +
+  geom_point(size = 3) +  # Points with specified size, color mapped to Division
+  scale_color_manual(values = c("Division E" = "blue", "Division W" = "red")) +  # Blue for Division E, Red for Division W
+  labs(
+    x = "Walks",
+    y = "Runs"
+  ) +
+  facet_wrap(~ Division, scales = "free_x", ncol = 2) +  # Separate plots by Division (side by side)
+  theme_minimal() +
+  theme(
+    plot.margin = margin(t = 20, r = 20, b = 50, l = 20),  # Adjust bottom margin to create space for the label
+    plot.subtitle = element_text(hjust = 0, vjust = 1, size = 10, face = "plain"),  # Subtitle settings
+    plot.caption = element_text(hjust = 0, vjust = 0, size = 10, face = "plain"),  # Caption settings
+    legend.position = "none"  # Remove the legend
+    ) +
+  labs(caption = "Figure 1.4")  # Add label "Figure 1.4" at the bottom-left corner
+
+# Show the plot
+print(scatterplot)
+```
+### Solution Q2.2
+```{r}
+
+# Calculate the correlation between Walks and Runs by Division and round the correlation to 3 decimal places
+correlation_by_division <- Hitters %>%
+  group_by(Division) %>%
+  summarize(Correlation = round(cor(Walks, Runs, method = "pearson"), 3)) %>%
+  as_tibble()  # Convert to tibble for better display
+
+# Print the result
+print(correlation_by_division)
+
+```
+### Solution Q2.3
+```{r}
+# Convert 'Division' to a factor (if it's not already)
+Hitters_clean$Division <- as.factor(Hitters_clean$Division)
+
+# Fit the linear regression model
+model <- lm(Runs ~ Walks + Division, data = Hitters_clean)
+
+# Print the summary of the model
+summary(model)
+```
+### Solution Q2.4
+```{r}
+# Convert 'Division' to a factor (if it's not already)
+Hitters_clean$Division <- as.factor(Hitters_clean$Division)
+
+# Fit the linear regression model
+model <- lm(Runs ~ Walks + Division, data = Hitters_clean)
+
+# Store the parameter estimates (coefficients) in the 'fit.coef' object
+fit.coef <- coef(model)
+
+# Print the 'fit.coef' object
+print(fit.coef)
+```
+### Solution Q2.5
+```{r}
+# Extract standardized residuals
+std_residuals <- rstandard(model)
+
+# Create a data frame for ggplot
+qq_data <- data.frame(residuals = std_residuals)
+
+# Create the QQ plot using ggplot2
+ggplot(qq_data, aes(sample = residuals)) +
+  geom_qq() +  # Create the QQ plot
+  geom_qq_line(col = "red") +  # Add the normal reference line
+  labs(
+    x = "x",  # X-axis label
+    y = "y"   # Y-axis label
+  ) +
+  theme_minimal() +  # Apply minimal theme
+  theme(
+    plot.margin = margin(t = 20, r = 20, b = 50, l = 10),  # Adjust bottom margin for space
+    plot.subtitle = element_text(hjust = 0, vjust = 1, size = 10, face = "plain"),  # Left-align the subtitle
+    plot.caption = element_text(hjust = 0, vjust = 0, size = 10, face = "plain")  # Add custom caption as bottom-left label
+  ) +
+  labs(caption = "Figure 1.5")  # Add subtitle outside the chart
+
+```
 
   
 ## Question 3
@@ -85,8 +286,33 @@ Create a new dataset in which only observations with number of runs in 1986 grea
   3. Export the new dataset that was created in Q3.1 as an excel file (and include the data in out output that you submit as a solution for the exam).
   
 ### Solution Q3.1
+```{r}
+new_data <- Hitters_clean %>%
+  filter(Runs > 30) %>%
+  select(Hits, HmRun, Runs, Walks, Division)
+
+num_observations <- nrow(new_data)
+cat("Number of observations in the new dataset: ", num_observations, "\n")
+```
 ### Solution Q3.2
+```{r}
+sorted_data <- new_data %>%
+  arrange(Division, desc(Hits))  # Sort by Division and Hits (descending order)
+
+# Print the top 5 observations from each Division
+top_5_by_division <- sorted_data %>%
+  group_by(Division) %>%
+  slice_head(n = 5)  # Get top 5 from each division
+
+cat("Top 5 observations in each Division:\n")
+print(top_5_by_division)
+```
 ### Solution Q3.3
+```{r}
+library(writexl)  # To export as an Excel file
+write_xlsx(new_data, path = "Hitters_filtered_data.xlsx")
+cat("The new dataset has been exported as 'Hitters_filtered_data.xlsx'.\n")
+```
 
 # Part 2 : the <tt>Hitters</tt> data  
   
