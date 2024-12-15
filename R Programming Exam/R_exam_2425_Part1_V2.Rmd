@@ -1,0 +1,392 @@
+---
+title: 'Programming in R: Solutions for the exam part 1 (13/12/2024)'
+output:
+  pdf_document: default
+  word_document: default
+  html_document: default
+subtitle: Your Name (10/01/25)
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+library(tidyverse)
+library(dplyr)
+```
+
+
+\newpage
+
+
+
+# Part 1 : the <tt>Hitters</tt> data
+
+For the analysis of this part we use the data <tt>Hitters</tt> which is a part of the R package <tt>ISLR</tt>. This is the major league baseball data from the 1986 and 1987 seasons. More information can be found in https://rdrr.io/cran/ISLR/man/Hitters.html. The code below can be used to access the data
+
+```{r}
+library(ISLR)
+data(Hitters)
+names(Hitters)
+```
+
+## Question 1
+
+In this question we focus on the player's division at the end of 1986 (the variable <tt>Division</tt>) and the number of runs in 1986 (the variable <tt>Runs</tt>). 
+
+ 1. How many observations are there in each category of the variable <tt>Division</tt>?
+ 
+ 2. Produce the table below.
+ 
+ 3. Test if the  number of runs (the variable <tt>Runs</tt>) is equal across the divisions. Conduct a Wilcoxon test for two independent samples.
+ 
+ 4. Produce Figure 1.1. Note that the points in red are the sample means.
+
+
+### Solution Q1.1
+### Solution Q1.2
+### Solution Q1.3
+### Solution Q1.4
+
+
+
+
+## Question 2
+
+In this question we focus on the variable number of walks in 1986 (the variable <tt>Walks</tt>) in addition to the variables from Q1. 
+
+1. Produce Figure 1.2, 1.3, and 1.4.
+2. Produce the table below (correlation between Walks and run by division group)
+3. Fit the following linear regression model:
+4.  Define a R object <tt>fit.coef</tt> in which you store the parameter estimates of the coefficients and print the object.
+5. Let $e_{i}$ the residual obtained for the regression model in Q2.3. Let $es_{i}$ the standardized residual given by:
+  $$es_{i}=\frac{e_{i}}{MSE}$$
+  Check if the standardized residuals follow a standard normal distribution using a qq normal probability plot shown in Figure 1.5.
+  
+  
+
+### Solution Q2.1
+### Solution Q2.2
+### Solution Q2.3
+### Solution Q2.4
+### Solution Q2.5
+
+
+  
+## Question 3
+
+Create a new dataset in which only observations with number of runs in 1986 greater than 30 are included. The following variables should be included in the dataset: <tt>Hits</tt>, <tt>HmRun</tt>, <tt>Runs</tt>, <tt>Walks</tt> and <tt>Division</tt>. 
+  
+  1. How many observations are included in the new dataset.
+
+  2. Sort the new data according to the variable the number of hits in 1986 (the variable <tt>Hits</tt>). Print the top 5 observations in each division.
+  
+  3. Export the new dataset that was created in Q3.1 as an excel file (and include the data in out output that you submit as a solution for the exam).
+  
+### Solution Q3.1
+### Solution Q3.2
+### Solution Q3.3
+
+# Part 2 : the <tt>Hitters</tt> data  
+  
+
+## Question 4  
+  
+In this part you need to prepare a presentation of 5 slides **using R markdown** about the analysis that you conducted in part 1. 
+
+1. Your presentation should include a title page, at least one slide with text, at least one slide with a Graphical display and at least one slide in which you print an output from a statistical model or a statistical test applied to the data.
+2. Create from the presentation a PDF file and add this file with the Rmd file that was used to produce the presentation to your solution's output.
+
+
+
+# Part 3: the <tt>Boston</tt> data
+
+In this part of the exam, we focus on the <tt>Boston</tt> dataset which is a part of the <tt>MASS</tt> R package. To access the data you need to install the package. More information can be found in https://www.statology.org/boston-dataset-r/. Use the code below to access the data. 
+
+```{r, warning=FALSE, message=FALSE}
+library(MASS)
+data(Boston)
+names(Boston)
+```
+
+## Question 5
+
+1. How many observations and variables are included in the dataset? How many missing values, per each variable, are there in the dataset?
+
+2. Calculate the minimum and maximum for the variables <tt>crim</tt>, <tt>zn</tt> and <tt>indus</tt> across the levels of the variable <tt>chas</tt>. Produce the panel below.
+
+3. Count the number of homes that are near the Charles River (i.e., observations with <tt>chas</tt> equal to 1) vs. those that are not located near to the Charles river (observations with <tt>chas</tt> equal to zero).
+
+4. For each level of the variable <tt>chas</tt>, calculate the average number of rooms per dwelling (the variable <tt>rm</tt>). Sort the data according to the average number of rooms per dwelling. 
+
+### Solution Q5.1
+### Solution Q5.2
+### Solution Q5.3
+### Solution Q5.4
+
+
+## Question 6
+
+1. Create a new data frame, <tt>Boston2</tt>, for which the crime rate (the variable <tt>crim</tt>) is lower than 5 and the proportion of lower-status population (the variable <tt>lstat</tt>) is lower than 10. How many observations are included in this data frame?
+
+2. What are the average median home value (the variable <tt>medv</tt> ) and the average number of rooms per dwelling (the variable <tt>rm</tt>) for the dataset created in Q6.1.
+
+3. Visualize the relationship between <tt>medv</tt> and <tt>rm</tt> for the dataset created in Q6.1 as shown in Figure 6.1.
+
+4. Identify the outlying observations for which the average number of rooms per dwelling (the variable <tt>rm</tt>) is smaller than 5 or higher than 8.75 in the dataset created in Q6.1. Add the value of the average number of rooms per dwelling to the figure (inside the frame) as shown in Figure 6.2.
+
+5. Exclude the three outliers that was marked in Figure 6.2 from the data and produce Figure 6.3, label points with extreme values of <tt>medv</tt> i.e, observation for which the value of the variable <tt>medv</tt> is above the 90th percentile.
+
+### Solution Q6.1
+### Solution Q6.2
+### Solution Q6.3
+### Solution Q6.4
+### Solution Q6.5
+
+## Question 7
+
+1. Define a new categorical variable <tt>crim_cat</tt> in the following way: Re-code the variable <tt>crim</tt> into three categories:
+
+    crim <5: Low.\
+    crim 5-15: Medium.\
+    crim >15: High.
+    
+Count how many observations are included in each category.
+
+2. Produce the pie plot and the barplot in a figure with one row of two columns, as presented in Figure 7.1.
+
+3. Produce the frequency table below and Figure 7.2 (the figure shows the proportion of each category of the variable <tt>crim_cat</tt> across the levels of the variable <tt>chas</tt>).
+
+4. Use a chi-square test to test the hypothesis whether or not a home is near the Charles River (the variable <tt>chas</tt>) and the categorical crime variable  <tt>crim_cat</tt> are independent.
+
+### Solution Q7.1
+### Solution Q7.2
+### Solution Q7.3
+### Solution Q7.4
+
+
+## Question 8
+
+1. Calculate the correlation between the proportion of Black residents by town (the variable <tt>black</tt>) and the status of the population (the variable <tt>lstat</tt>) using the R function <tt>cor.test()</tt>.
+
+2. Use the R package <tt>corrplot</tt> to produce the heatmap of correlations between variables shown in Figure 8.1. Note that the categorical variables are excluded form the data in this Figure.
+
+### Solution Q8.1
+### Solution Q8.2
+
+## Question 9
+
+1. Define a new categorical variable, <tt>medv_cat</tt>, in the following way: Re-code the variable <tt>medv</tt> into three categories:
+
+    medv < 15: Low.\
+    medv 15-25: Medium.\
+    medv > 25: High.
+    
+Include the new variable in the <tt>Boston</tt> dataset and produce the the table below.
+
+
+2. Produce Figure 9.1.
+
+
+3. Test if the means of the variable <tt>nox</tt> across the three groups of the variable <tt>medv_cat</tt> are equal using the Kruskal-Wallis test.
+
+4. Produce Figure 9.2. To make the plot, you can use the function <tt>ggline()</tt> of the package <tt>ggpubr</tt> or any other R package/function that you wish. Do not forget to add the error bars to the figure.
+
+
+### Solution Q9.1
+### Solution Q9.2
+### Solution Q9.3
+### Solution Q9.4
+
+
+## Question 10
+
+For this queation, use the version of the <tt>Boston</tt> dataset produced in Q9.1. 
+
+1. Categorize the <tt>crim</tt> and <tt>nox</tt> variables into three levels ("Low," "Medium," and "High") and two levels ("Low","High"), respectively,  based on their quantiles as below:
+
+  <tt>crim_level</tt>: Represents the crime rate divided into three groups:
+
+      "Low": Bottom 33% of crime rate values.
+      "Medium": Middle 33% of crime rate values.
+      "High": Top 33% of crime rate values.
+
+  <tt>nox_level</tt>: Represents nitric oxide concentration divided into two groups:
+
+      "Low": Bottom 50% of nitric oxide concentration values.
+      "High": Top 50% of nitric oxide concentration values.
+
+2. Produce the plot in Figure 10.1 which shows separate density plots of <tt>medv</tt> for each category of <tt>nox_level</tt> (Low,High), with each density plot color-coded by <tt>crim_level</tt>.
+
+3. For subjects with Low level of crim, conduct a t-test to test the hypothesis that the mean <tt>medv</tt> is equal between the low and high nitrogen oxides concentration groups.
+
+4. Create a R object that contain the $95\%$ confidence interval for the mean difference. **DO NOT** use <tt>object=c(3.932519,8.891779)</tt>. 
+
+
+### Solution Q10.1
+### Solution Q10.2
+### Solution Q10.3
+### Solution Q10.4
+
+
+
+# Part 4: the <tt>PimaIndiansDiabetes2</tt> data
+
+In this part of the exam, the questions are focused on the <tt>PimaIndiansDiabetes2</tt> dataset which is a part of the <tt>mlbench</tt> R package. To access the data you need to install the package. More information about the dataset and variables can be found in https://search.r-project.org/CRAN/refmans/mlbench/html/PimaIndiansDiabetes.html. Use the code below to access the data. 
+
+```{r, warning=FALSE, message=FALSE}
+library(mlbench)
+data(PimaIndiansDiabetes2)
+names(PimaIndiansDiabetes2)
+```
+
+
+## Question 11.
+
+1. Filter out observations with missing values and define a new dataset: <tt>new_PimaIndiansDiabetes2</tt>.
+How many observations are included in the new dataset?
+
+2. For each level of diabetes status (the variable <tt>diabetes</tt>), identify the top 5 patients with highest <tt>glucose</tt> and lowest <tt>mass</tt> values and produce the object bellow.
+
+
+### Solution Q11.1
+### Solution Q11.2
+
+## Question 12.
+
+In this question we use the <tt>PimaIndiansDiabetes2</tt> dataset.
+
+1. Remove missing values from the variables <tt>glucose</tt> and <tt>mass</tt> and create a new dataset <tt>new_PimaIndiansDiabetes3</tt>. How many observationas are included in the new dataset ?
+
+2. Create a new variable <tt>glucose_level</tt> which categorizes the variable <tt>glucose</tt> as "Low", "Normal", or "High" based on quantiles (i.e., bottom 25% as Low, 25%-75% as Normal, and top 25% as High).
+
+3. Define a new R objectes, the mean (<tt>mean_mass</tt>) and standard deviation (<tt>sd_mass</tt>) of the variable <tt>mass</tt> within each <tt>glucose_level</tt> category and produce the folowing table:
+
+### Solution Q12.1
+### Solution Q12.2
+### Solution Q12.3
+
+
+## Question 13.
+
+In this question we use the dataset <tt>new_PimaIndiansDiabetes3</tt> that was created in Q12.1. 
+
+1. Figure 13.1 shows multi boxplot displaying the distribution of the variable <tt>mass</tt> by age groups (<tt>age_group</tt>), separated by <tt>diabetes</tt> status.
+Note that the data points in Figure 13.1 are colored according to the  <tt>glucose_level</tt>. Produce Figure 13.1.
+
+
+### Solution Q13.1
+
+
+## Question 14.
+
+In this queation we use dataset <tt>new_PimaIndiansDiabetes3</tt>  created in Question Q12.1.
+
+1. Create a new variable, <tt>age_adjusted_risk</tt>, based the equation below.
+
+$$
+\mathrm{age\_adjusted\_risk} = \sqrt{\frac{0.5 \times \mathrm{glucose} + 0.3 \times \mathrm{mass} + 0.2 \times \mathrm{pressure}}{\mathrm{age}}}.
+$$
+
+
+2. Produce the Figure 14.1. Note that the information that is provided in the title is an output from a two sample t-test of the adjusted risk (defined in Q14.1) across the diabetes groups (the variable <tt>diabetes</tt>). 
+
+
+
+### Solution Q14.1
+### Solution Q14.2
+
+
+## Question 15.
+
+1. Create a function that receives as an input: (1) a data frame (<tt>data</tt>), (2) a names of a categorical variable (<tt>group_col</tt>) and (3) all numeric variables (<tt>numeric_cols</tt>). The function output should be a table with the mean, median, standard deviation, and IQR for all the numeric variables in the data frame across the level of the  categorical variable.
+
+2. Apply the function that you wrote in Q15.1 to the data frame (<tt>PimaIndiansDiabetes2</tt>), use the variable (<tt>diabetes</tt>) as the categorical variable and all the numerical variables in the data set. Print the <tt>mean</tt> of two numeric variables only (<tt>glucose</tt>, <tt>insulin</tt>).
+
+### Solution Q15.1
+### Solution Q15.2
+
+
+
+## Question 16.
+
+1. Create a new dataset, <tt>PimaIndiansDiabetes5</tt>, from the original dataset <tt>PimaIndiansDiabetes2</tt> and remove missing values.
+
+2. Using the new dataset created in Question 16.1, create another dataset , <tt>median_insulin_data</tt>, by including only patients over 40 years old (the variable <tt>age</tt>) with blood pressure above 70 (the variable <tt>pressure</tt>), and select only  patients whose insulin levels (the variable <tt>insulin</tt> is above the median insulin level. How many observations are included in the new dataset.
+
+
+3. Using the dataset created in Question Q16.2, create a new dataset <tt>selected_median_insulin</tt> which includes the variables <tt>age</tt>, <tt>pressure</tt>, <tt>insulin</tt>, <tt>pedigree</tt>, <tt>pregnant</tt>, <tt>diabetes</tt> variables. Display the last six observations of the dataset. 
+
+### Solution Q16.1
+### Solution Q16.2
+### Solution Q16.3
+
+
+## Question 17.
+
+In this question we use the dataset created in Q16.1 (<tt>PimaIndiansDiabetes5</tt>).
+
+1. Create a new dataset <tt>filtered_primadia5</tt> by including  patients with the variable <tt>mass</tt> above the median and the variable <tt>pedigree</tt> above the mean. How many observations are included in the new dataset?
+
+
+2. Using the new dataset, produce an animated dynamic plot, shown in Figure 17.1 (Note the plot is colored by the variable <tt>age</tt>). You need to look at this plot in the HTML file of the exam. Produce an identical plot. Note that it should be produced in the HTML version of your solution, on the PDF file of the solution it will be a static file.
+
+3. Export Figure 17.1 that was produced in Q17.2 as an external file. Name the file <tt>3D_Bubble_Plot.html</tt> and make sure to add this exported file to the solutions folder. Note that in the PDF solution of the exam, Figure 17.1 will not be dynamic. 
+
+### Solution Q17.1
+### Solution Q17.2
+### Solution Q17.3
+
+## Question 18.
+
+Create a new dataset, <tt>prima_data</tt>, without missing data data using <tt>PimaIndiansDiabetes2</tt>.
+
+1. How many observations are included in the new dataset?
+
+2. Recode the variable <tt>pregnant</tt> in the following way:
+<tt>0 = "0"</tt>, <tt>1 = "1"</tt>, <tt>2 = "2"</tt> and <tt>\>= 3 = "3+"</tt>). Name the new variable <tt>pregnant_grouped</tt>. Add the new variable to the dataset <tt>prima_data</tt>. Print the first 5 observations for whom the number of pregnancies is equal to 2. 
+
+3. Use the <tt>prima_data</tt> created in Q18.1, create a new dataset <tt>mean_mass_data</tt> containing the mean of the variable (<tt>mass</tt>) for each combination of grouped pregnancy levels (<tt>pregnancy_grouped</tt>) and diabetes status (the variable <tt>diabetes</tt>). What is the dimension of the new dataset? Print the new dataset.
+4. Produce Figure 18.1 (blood pressure VS. pregnancies).
+
+5. Produce the table below that shows the mean and SD of age by number of pregnancies.
+
+6. Produce Figure 18.2. Note that the black dots are the mean age at each pregnancy group.
+
+7. Produce the interactive plot which is shown in Figure 18.3. You need to look at the HTML version of the exam to see Figure 18.3 in an interactive form.
+
+
+### Solution Q18.1
+### Solution Q18.2
+### Solution Q18.3
+### Solution Q18.4
+### Solution Q18.5
+### Solution Q18.6
+### Solution Q18.7
+
+
+## Question 19.
+
+In this question we use the dataset <tt>PimaIndiansDiabetes5</tt> that was created in Q16.1.
+
+1. Use a **for loop** in which you calculate, at each step of the loop, the correlation between glucose level (the variable <tt>glucose</tt> and blood pressure the variable <tt>pressure</tt>) for each level of number of pregnancies (the variable <tt>pregnant</tt>). This mean that in step 1 you calculate the correlation between <tt>glucose</tt> <tt>pressure</tt> for observation with <tt>pregnant</tt>=0 etc. Produce the data frame bellow.
+
+
+2. In the above panel, correlations between the variables for observations with number of pregnancies higher than 13 is NA. Change the for loop on Q19.1 so the NA values will not be included in the panel.
+
+
+
+### Solution Q19.1
+### Solution Q19.2
+
+
+
+## Question 20.
+
+In this question we use the dataset <tt>prima_data</tt> created in Question 18.1.
+
+
+1. Produce the interactive plot which is shown Figure 20.1. You need to look at the HTML version of the exam to see the figure in an interactive format.
+
+### Solution Q20.1
