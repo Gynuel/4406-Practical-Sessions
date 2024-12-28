@@ -1,35 +1,87 @@
 ---
-title: 'Part 2 Question 4: 5 Slide Presentation'
-author: "Emanuel Gloria"
-date: "2024-12-15"
-output: beamer_presentation
+title: 'Programming in R Exam Part 2'
+subtitle: 'An Analysis of the Hitters Data'
+author: "Emanuel Y. Gloria"
+date: "December 27, 2024"
+output:
+  beamer_presentation:
+    theme: "AnnArbor"
+    colortheme: "dolphin"
+    fonttheme: "structurebold"
+    slide_level: 2
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## R Markdown
+---
 
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+## Introduction
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+### Analysis of Baseball Data for the Year 1986
 
-## Slide with Bullets
+This presentation summarizes the analysis conducted on the 1986 baseball dataset, focusing on the relationship between `Walks` and `Runs`, and a statistical model that includes both variables along with the `Division` factor.
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+---
 
-## Slide with R Output
+## Objective
 
-```{r cars, echo = TRUE}
-summary(cars)
+The objective of this analysis is to understand the relationship between `Walks` and `Runs` in the context of the 1986 baseball data. The analysis is also extended by including the `Division` factor (East and West Divisions) to assess how these factors influence the number of runs scored.
+
+---
+
+## Results
+
+### Scatter Plot
+
+Plotting the relationship between `Walks` and `Runs` and extending it by including the `Division` factor (East and West Divisions). This shows a positive linear trend.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(ISLR)
+library(dplyr)
+
+data(Hitters)
+
+# Create a scatterplot between Walks and Runs, disaggregated by Division
+scatterplot <- ggplot(Hitters, aes(x = Walks, y = Runs, color = Division)) +
+  geom_point(size = 1.75, alpha = 0.8) +  # Add points with specified size
+  scale_color_manual(values = c("E" = "red", "W" = "black")) +  # Color E points red, W points black
+  labs(
+    x = "Walks",
+    y = "Runs",
+    color = "Division"  # Label for the legend
+  ) +
+  theme_minimal() +
+  theme(
+    plot.margin = margin(t = 20, r = 20, b = 50, l = 20),  # Adjust bottom margin to create space for subtitle
+    plot.subtitle = element_text(hjust = 0, vjust = 1, size = 10, face = "plain"),  # Left-align the subtitle
+    plot.caption = element_text(hjust = 0, vjust = 0, size = 10, face = "plain")  # Add custom caption as bottom-left label
+  )
+
+# Add the label "Figure 1.2" using caption (treated as subtitle outside the plot area)
+scatterplot <- scatterplot +
+  labs(caption = "Figure 1.2")  # This moves the label to the bottom-left corner
+
+# Show the plot
+scatterplot
 ```
+---
+## Results
 
-## Slide with Plot
+### Correlation Analysis
 
-```{r pressure}
-plot(pressure)
+Calculating the correlation between Walks and Runs by Division and rounded it to three decimal places revealed a score of at least 0.7 indicating a strong positive relationship.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+# Calculate the correlation between Walks and Runs by Division and round the correlation to 3 decimal places
+correlation_by_division <- Hitters %>%
+  group_by(Division) %>%
+  summarize(Correlation = round(cor(Walks, Runs, method = "pearson"), 3)) %>%
+  as_tibble()  # Convert to tibble for better display
+
+# Print the result
+print(correlation_by_division)
 ```
-

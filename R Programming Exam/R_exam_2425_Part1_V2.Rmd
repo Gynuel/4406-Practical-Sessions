@@ -86,7 +86,7 @@ boxplot_plot <- ggplot(Hitters_clean, aes(x = Division, y = Runs)) +
   geom_boxplot(fill = "grey80", color = "black", outlier.shape = NA, alpha = 0.5) +  # Reduced opacity
   geom_point(data = means, aes(x = Division, y = Runs), 
              color = "red", size = 3) +
-  labs(title = "Boxplot of Runs by Division", x = "Division", y = "Runs") +
+  labs(x = "Division", y = "Runs") +
   theme_minimal()
 
 # Second plot: Violin plot with sample means
@@ -94,7 +94,7 @@ violin_plot <- ggplot(Hitters_clean, aes(x = Division, y = Runs)) +
   geom_violin(fill = "lightblue", color = "black", alpha = 0.5) +  # Reduced opacity
   geom_point(data = means, aes(x = Division, y = Runs), 
              color = "red", size = 3) +
-  labs(title = "Violin Plot of Runs by Division", x = "Division", y = "Runs") +
+  labs( x = "Division", y = "Runs") +
   theme_minimal()
 
 
@@ -148,18 +148,9 @@ scatterplot <- scatterplot +
 print(scatterplot)
 ```
 ```{r}
-# Load necessary libraries
-library(ggplot2)
-library(gridExtra)
-library(grid)
-
-# Load the dataset
-data(Hitters)
-Hitters_clean <- na.omit(Hitters)
-
 # Separate data for Division E and Division W
-division_e <- subset(Hitters_clean, Division == "E")
-division_w <- subset(Hitters_clean, Division == "W")
+division_e <- subset(Hitters, Division == "E")
+division_w <- subset(Hitters, Division == "W")
 
 # Create the scatter plot for Division E (blue dots)
 plot_e <- ggplot(division_e, aes(x = Walks, y = Runs)) +
@@ -182,16 +173,12 @@ grid::grid.text("Figure 1.3", x = unit(0, "npc"), y = unit(0, "npc"), just = c("
 
 ```
 ```{r}
-# Load the dataset
-data(Hitters)
-Hitters_clean <- na.omit(Hitters)
-
 # Create a new column "Division" for plotting purposes
-Hitters_clean$Division <- ifelse(Hitters_clean$Division == "E", "Division E", "Division W")
+Hitters$Division <- ifelse(Hitters$Division == "E", "Division E", "Division W")
 
 # Create the scatterplot and separate by Division
-scatterplot <- ggplot(Hitters_clean, aes(x = Walks, y = Runs, color = Division)) +
-  geom_point(size = 3) +  # Points with specified size, color mapped to Division
+scatterplot <- ggplot(Hitters, aes(x = Walks, y = Runs, color = Division)) +
+  geom_point(size = 1) +  # Points with specified size, color mapped to Division
   scale_color_manual(values = c("Division E" = "blue", "Division W" = "red")) +  # Blue for Division E, Red for Division W
   labs(
     x = "Walks",
@@ -226,19 +213,16 @@ print(correlation_by_division)
 ### Solution Q2.3
 ```{r}
 # Convert 'Division' to a factor (if it's not already)
-Hitters_clean$Division <- as.factor(Hitters_clean$Division)
+Hitters$Division <- as.factor(Hitters$Division)
 
 # Fit the linear regression model
-model <- lm(Runs ~ Walks + Division, data = Hitters_clean)
+model <- lm(Runs ~ Walks + Division, data = Hitters)
 
 # Print the summary of the model
 summary(model)
 ```
 ### Solution Q2.4
 ```{r}
-# Convert 'Division' to a factor (if it's not already)
-Hitters_clean$Division <- as.factor(Hitters_clean$Division)
-
 # Fit the linear regression model
 model <- lm(Runs ~ Walks + Division, data = Hitters_clean)
 
@@ -287,10 +271,9 @@ Create a new dataset in which only observations with number of runs in 1986 grea
   
 ### Solution Q3.1
 ```{r}
-new_data <- Hitters_clean %>%
+new_data <- Hitters %>%
   filter(Runs > 30) %>%
-  select(Hits, HmRun, Runs, Walks, Division)
-
+  dplyr::select(Hits, HmRun, Runs, Walks, Division)
 num_observations <- nrow(new_data)
 cat("Number of observations in the new dataset: ", num_observations, "\n")
 ```
@@ -304,7 +287,7 @@ top_5_by_division <- sorted_data %>%
   group_by(Division) %>%
   slice_head(n = 5)  # Get top 5 from each division
 
-cat("Top 5 observations in each Division:\n")
+print("Top 5 observations in each Division:\n")
 print(top_5_by_division)
 ```
 ### Solution Q3.3
@@ -323,7 +306,6 @@ In this part you need to prepare a presentation of 5 slides **using R markdown**
 
 1. Your presentation should include a title page, at least one slide with text, at least one slide with a Graphical display and at least one slide in which you print an output from a statistical model or a statistical test applied to the data.
 2. Create from the presentation a PDF file and add this file with the Rmd file that was used to produce the presentation to your solution's output.
-
 
 
 # Part 3: the <tt>Boston</tt> data
@@ -347,10 +329,62 @@ names(Boston)
 4. For each level of the variable <tt>chas</tt>, calculate the average number of rooms per dwelling (the variable <tt>rm</tt>). Sort the data according to the average number of rooms per dwelling. 
 
 ### Solution Q5.1
-### Solution Q5.2
-### Solution Q5.3
-### Solution Q5.4
 
+```{r}
+# 1. How many observations and variables are included in the dataset?
+num_observations <- nrow(Boston)
+num_variables <- ncol(Boston)
+
+# Check for missing values in each variable
+missing_values <- colSums(is.na(Boston))
+
+# Print the results
+cat("Number of observations:", num_observations, "\n")
+cat("Number of variables:", num_variables, "\n")
+cat("Missing values per variable:\n")
+print(missing_values)
+```
+### Solution Q5.2
+```{r}
+# Calculate min and max for crim, zn, and indus across the levels of chas
+summary_tibble <- Boston %>%
+  group_by(chas) %>%
+  summarize(
+    crim_min = min(crim, na.rm = TRUE),
+    crim_max = max(crim, na.rm = TRUE),
+    zn_min = min(zn, na.rm = TRUE),
+    zn_max = max(zn, na.rm = TRUE),
+    indus_min = min(indus, na.rm = TRUE),
+    indus_max = max(indus, na.rm = TRUE)
+  ) %>%
+  as_tibble()
+
+# Print the tibble
+print(summary_tibble)
+```
+### Solution Q5.3
+```{r}
+# Count the number of homes near the Charles River (chas = 1) vs. not near (chas = 0)
+chas_counts <- Boston %>%
+  group_by(chas) %>%
+  summarize(homes_count = n()) %>%
+  as_tibble()
+
+# Print the counts
+print(chas_counts)
+```
+### Solution Q5.4
+```{r}
+# Calculate the average number of rooms per dwelling (rm) for each level of chas
+average_rm <- Boston %>%
+  group_by(chas) %>%
+  summarize(avg_rooms = mean(rm, na.rm = TRUE)) %>%
+  arrange(avg_rooms) %>%
+  as_tibble()
+
+# Print the average number of rooms per dwelling
+print(average_rm)
+```
 
 ## Question 6
 
@@ -365,10 +399,86 @@ names(Boston)
 5. Exclude the three outliers that was marked in Figure 6.2 from the data and produce Figure 6.3, label points with extreme values of <tt>medv</tt> i.e, observation for which the value of the variable <tt>medv</tt> is above the 90th percentile.
 
 ### Solution Q6.1
+```{r}
+# Create a new data frame for crim < 5 and lstat < 10
+Boston2 <- Boston %>%
+  filter(crim < 5, lstat < 10)
+
+# Count the number of observations
+n_obs <- nrow(Boston2)
+cat("Number of observations in Boston2:", n_obs, "\n")
+```
 ### Solution Q6.2
+```{r}
+# Calculate average medv and rm for the dataset created in Q6.1
+avg_values <- Boston2 %>%
+  summarize(
+    avg_medv = mean(medv, na.rm = TRUE),
+    avg_rm = mean(rm, na.rm = TRUE)
+  )
+print(avg_values)
+```
 ### Solution Q6.3
+```{r}
+# Visualize the relationship between medv and rm for Boston2 (Figure 6.1)
+ggplot(Boston2, aes(x = rm, y = medv)) +
+  geom_point(size = 1, alpha = 0.8) +
+  geom_smooth(method = "lm", color = "blue", linetype = "solid", se=FALSE)  +  # Strong solid blue diagonal line
+  labs(
+    x = "rm",
+    y = "medv",
+    caption = "Figure 6.1"
+  ) +
+  theme_minimal() +
+  theme(plot.caption.position = "plot", plot.caption = element_text(hjust = 0))
+```
 ### Solution Q6.4
+```{r}
+# Identify and visualize outliers based on rm < 5 or rm > 8.75 (Figure 6.2)
+Boston2 <- Boston2 %>%
+  mutate(outlier = ifelse(rm < 5 | rm > 8.75, "Outlier", "Normal"))
+
+# Add the value of rm to the figure for outliers
+ggplot(Boston2, aes(x = rm, y = medv, color = outlier)) +
+  geom_point(size = 1, alpha = 0.8) +
+  geom_smooth(method = "lm", color = "blue", linetype = "solid", se=FALSE)  +  # Strong solid blue diagonal line
+  geom_text(data = subset(Boston2, outlier == "Outlier"), aes(label = round(rm, 2)),
+            hjust = -0.2, vjust = 0.5, size = 3) +
+  labs(
+     x = "rm",
+    y = "medv",
+    caption = "Figure 6.2"
+  ) +
+  scale_color_manual(values = c("Outlier" = "red", "Normal" = "black")) +
+  theme_minimal()+
+  theme(plot.caption.position = "plot", plot.caption = element_text(hjust = 0))
+
+```
 ### Solution Q6.5
+```{r}
+# Exclude the outliers and create Figure 6.3
+Boston3 <- Boston2 %>%
+  filter(rm >= 5 & rm <= 8.75)
+
+# Identify extreme values of medv (above the 90th percentile)
+medv_90th <- quantile(Boston3$medv, 0.9, na.rm = TRUE)
+Boston3 <- Boston3 %>%
+  mutate(extreme_medv = ifelse(medv > medv_90th, "Extreme", "Normal"))
+
+# Visualize the relationship, label extreme medv points
+ggplot(Boston3, aes(x = rm, y = medv, color = extreme_medv)) +
+  geom_point(size = 1, alpha = 0.8) +
+    geom_smooth(method = "lm", color = "blue", linetype = "solid", se=FALSE)  +  # Strong solid blue diagonal line
+  geom_text(data = subset(Boston3, extreme_medv == "Extreme"), aes(label = round(medv, 2)),
+            hjust = -0.2, vjust = 0.5, size = 3) +
+  labs(
+        x = "rm",
+    y = "medv",
+    caption = "Figure 6.3"
+  ) +
+  scale_color_manual(values = c("Extreme" = "red", "Normal" = "black")) +
+  theme_minimal()+ theme(plot.caption.position = "plot", plot.caption = element_text(hjust = 0))
+```
 
 ## Question 7
 
@@ -387,10 +497,61 @@ Count how many observations are included in each category.
 4. Use a chi-square test to test the hypothesis whether or not a home is near the Charles River (the variable <tt>chas</tt>) and the categorical crime variable  <tt>crim_cat</tt> are independent.
 
 ### Solution Q7.1
+```{r}
+#Define crim_cat and count observations in each category
+Boston$crim_cat <- cut(Boston$crim,
+                       breaks = c(-Inf, 5, 15, Inf),
+                       labels = c("Low", "Medium", "High"),
+                       right = FALSE)
+# Count observations in each category
+crim_cat_counts <- table(Boston$crim_cat)
+print(crim_cat_counts)
+```
 ### Solution Q7.2
-### Solution Q7.3
-### Solution Q7.4
+```{r}
+# Produce pie plot and barplot in a single figure
+par(mfrow = c(1, 2), oma = c(0, 0, 0, 4), mar = c(2, 2, 2, 5))  # Adjust outer margins and individual plot margins
 
+# Pie plot
+pie(crim_cat_counts, col = c("red", "green", "blue"),
+    labels = crim_cat_counts, clockwise = TRUE)
+legend("right", legend = names(crim_cat_counts),
+       fill = c("red", "green", "blue"), title = "Category", bty = "n", xpd = TRUE, inset = c(-0.5, 0))
+
+# Barplot
+bar_heights <- barplot(crim_cat_counts, col = c("red", "green", "blue"))
+text(x = bar_heights, y = crim_cat_counts+30, labels = crim_cat_counts, xpd = TRUE, col = "black")
+legend("right", legend = names(crim_cat_counts),
+       fill = c("red", "green", "blue"), title = "Category", bty = "n")
+```
+### Solution Q7.3
+```{r}
+#Frequency table and proportion plot by chas
+chas_crim_table <- table(Boston$chas, Boston$crim_cat)
+print(chas_crim_table)
+
+# Proportion table
+# chas_crim_prop <- prop.table(chas_crim_table, margin = 1)
+# print(chas_crim_prop)
+
+# Proportion plot using ggplot2
+library(ggplot2)
+chas_crim_df <- as.data.frame(chas_crim_prop)
+colnames(chas_crim_df) <- c("chas", "crim_cat", "proportion")
+chas_crim_df$chas <- as.factor(chas_crim_df$chas)
+
+# Plot
+ggplot(chas_crim_df, aes(x = crim_cat, y = proportion, fill = chas)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Proportion of crim_cat across levels of chas",
+       x = "Crime Category (crim_cat)", y = "Proportion", fill = "chas", caption = "Figure 7.2")+ theme(plot.caption.position = "plot", plot.caption = element_text(hjust = 0))+
+  theme_minimal()
+```
+### Solution Q7.4
+```{r}
+chisq_test <- chisq.test(chas_crim_table)
+print(chisq_test)
+```
 
 ## Question 8
 
@@ -399,8 +560,30 @@ Count how many observations are included in each category.
 2. Use the R package <tt>corrplot</tt> to produce the heatmap of correlations between variables shown in Figure 8.1. Note that the categorical variables are excluded form the data in this Figure.
 
 ### Solution Q8.1
+```{r}
+# Calculate the correlation between the proportion of Black residents by town (black) and the status of the population (lstat)
+correlation_result <- cor.test(Boston$black, Boston$lstat)
+print(correlation_result)
+```
 ### Solution Q8.2
+```{r}
+# Load the corrplot package
+library(corrplot)
 
+# Select only numeric variables (excluding categorical variables like "chas")
+numeric_data <- Boston[, sapply(Boston, is.numeric)]
+numeric_data <- numeric_data[, !names(numeric_data) %in% "chas"]
+
+# Calculate the correlation matrix
+correlation_matrix <- cor(numeric_data)
+
+# Create the correlation heatmap using corrplot
+corrplot(correlation_matrix, method = "color", type = "upper", 
+         order = "original", tl.col = "red", tl.srt = 45)
+
+# Add caption "Figure 8.1" at the bottom left corner
+mtext("Figure 8.1", side = 1, line = 3, at = -0.3, cex = 0.8, adj = 0)
+```
 ## Question 9
 
 1. Define a new categorical variable, <tt>medv_cat</tt>, in the following way: Re-code the variable <tt>medv</tt> into three categories:
@@ -421,14 +604,62 @@ Include the new variable in the <tt>Boston</tt> dataset and produce the the tabl
 
 
 ### Solution Q9.1
-### Solution Q9.2
-### Solution Q9.3
-### Solution Q9.4
+```{r}
+# Define the new categorical variable 'medv_cat'
+Boston$medv_cat <- cut(Boston$medv,
+                       breaks = c(-Inf, 15, 25, Inf),
+                       labels = c("Low", "Medium", "High"))
 
+# Create the table for the new categorical variable
+medv_cat_table <- table(Boston$medv_cat)
+print(medv_cat_table)
+```
+### Solution Q9.2
+```{r}
+# Create a violin plot with a box plot inside and custom colors
+ggplot(Boston, aes(x = medv_cat, y = nox, fill = medv_cat)) +
+  geom_violin(trim = TRUE,alpha = 0.5) +
+  geom_boxplot(width = 0.1, aes(fill = medv_cat), color = "black", outlier.colour = "black",alpha =0.5) +  # Boxplot fill mapped to medv_cat
+  scale_fill_manual(values = c("Low" = "red", "Medium" = "green", "High" = "blue")) +  # Custom colors for medv_cat
+  labs(x = "medv_cat", y = "nox", caption = "Figure 9.1")+ theme(plot.caption.position = "plot", plot.caption = element_text(hjust = 0))+ 
+  guides(fill = guide_legend(title = "medv_cat", title.position = "top", 
+                             label.position = "right", override.aes = list(size = 5)))+
+  theme_minimal()
+```
+### Solution Q9.3
+```{r}
+# Perform Kruskal-Wallis test
+kruskal_test_result <- kruskal.test(nox ~ medv_cat, data = Boston)
+print(kruskal_test_result)
+```
+### Solution Q9.4
+```{r}
+# Load necessary library for ggline
+library(ggpubr)
+
+# Create the plot with scatterplot, mean points, and error bars
+ggplot(Boston, aes(x = medv_cat, y = nox, color = medv_cat)) +
+  # Scatterplot layer with jitter for better visualization
+  geom_point(position = position_jitter(width = 0.2), size = 1, alpha = .5) +
+  # Error bars for mean with standard error
+  stat_summary(fun.data = mean_se, geom = "errorbar", width = .3, color = "black") +
+  # Mean points
+  stat_summary(fun = mean, geom = "point", size = 1, color = "black") +
+  # Custom color palette for medv_cat categories
+  scale_color_manual(values = c("High" = "blue", "Medium" = "green", "Low" = "red")) +
+  # Add axis labels and title
+  labs(
+    x = "medv_cat",
+    y = "mean_nox",
+  caption = "Figure 9.2")+ theme(plot.caption.position = "plot", plot.caption = element_text(hjust = 0))+
+  # Minimal theme for a clean look
+  theme_minimal()
+  
+```
 
 ## Question 10
 
-For this queation, use the version of the <tt>Boston</tt> dataset produced in Q9.1. 
+For this question, use the version of the <tt>Boston</tt> dataset produced in Q9.1. 
 
 1. Categorize the <tt>crim</tt> and <tt>nox</tt> variables into three levels ("Low," "Medium," and "High") and two levels ("Low","High"), respectively,  based on their quantiles as below:
 
@@ -451,10 +682,51 @@ For this queation, use the version of the <tt>Boston</tt> dataset produced in Q9
 
 
 ### Solution Q10.1
-### Solution Q10.2
-### Solution Q10.3
-### Solution Q10.4
+```{r}
+# Categorizing crim into three levels (Low, Medium, High)
+Boston <- Boston %>%
+  mutate(crim_level = case_when(
+    crim <= quantile(crim, 1/3) ~ "Low",
+    crim > quantile(crim, 1/3) & crim <= quantile(crim, 2/3) ~ "Medium",
+    TRUE ~ "High"
+  ))
 
+# Categorizing nox into two levels (Low, High)
+Boston <- Boston %>%
+  mutate(nox_level = ifelse(nox <= median(nox), "Low", "High"))
+
+```
+### Solution Q10.2
+```{r}
+# Produce density plot for medv by nox_level and color-coded by crim_level
+
+ggplot(Boston, aes(x = medv, fill = crim_level)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~ nox_level, ncol = 1) +
+  scale_fill_manual(values = c("Low" = "red", "Medium" = "green", "High" = "blue")) +
+  labs(
+    x = "medv",
+    y = "density",
+    fill = "crim_level",
+  caption = "Figure 10.1")+ theme(plot.caption.position = "plot", plot.caption = element_text(hjust = 0))+
+  # Minimal theme for a clean look
+  theme_minimal()
+```
+### Solution Q10.3
+```{r}
+# Perform t-test for Low crime level group
+low_crim_data <- subset(Boston, crim_level == "Low")
+
+# t-test for mean difference between Low and High nox_level
+t_test_result <- t.test(medv ~ nox_level, data = low_crim_data)
+t_test_result
+```
+### Solution Q10.4
+```{r}
+# Extract and print the 95% confidence interval for the mean difference
+conf_interval <- t_test_result$conf.int
+print(conf_interval)
+```
 
 
 # Part 4: the <tt>PimaIndiansDiabetes2</tt> data
@@ -477,7 +749,34 @@ How many observations are included in the new dataset?
 
 
 ### Solution Q11.1
+```{r}
+# Filter out observations with missing values and define a new dataset new_PimaIndiansDiabetes2
+new_PimaIndiansDiabetes2 <- na.omit(PimaIndiansDiabetes2)
+
+# Count the number of observations in the new dataset
+num_observations <- nrow(new_PimaIndiansDiabetes2)
+cat("Number of observations in the new dataset:", num_observations, "\n")
+```
 ### Solution Q11.2
+```{r}
+# Get top 5 highest glucose and top 5 lowest mass values for each diabetes group
+top_patients_glucose_mass <- new_PimaIndiansDiabetes2 %>%
+  group_by(diabetes) %>%
+  # Get top 5 highest glucose values
+  arrange(diabetes, desc(glucose)) %>%
+  slice_head(n = 5) #%>%
+  # Get top 5 lowest mass values
+  #bind_rows(
+  #  new_PimaIndiansDiabetes2 %>%
+  #    group_by(diabetes) %>%
+  #    arrange(diabetes, mass) %>%
+  #    slice_head(n = 5)
+  #) %>%
+  #ungroup()
+
+# View the result
+top_patients_glucose_mass
+```
 
 ## Question 12.
 
@@ -490,9 +789,42 @@ In this question we use the <tt>PimaIndiansDiabetes2</tt> dataset.
 3. Define a new R objectes, the mean (<tt>mean_mass</tt>) and standard deviation (<tt>sd_mass</tt>) of the variable <tt>mass</tt> within each <tt>glucose_level</tt> category and produce the folowing table:
 
 ### Solution Q12.1
-### Solution Q12.2
-### Solution Q12.3
+```{r}
+# Remove missing values from the variables glucose and mass and create a new dataset new_PimaIndiansDiabetes3
+new_PimaIndiansDiabetes3 <- PimaIndiansDiabetes2 %>%
+  filter(!is.na(glucose) & !is.na(mass))
 
+# Check how many observations are included in the new dataset
+cat("Number of observations in the new dataset:",nrow(new_PimaIndiansDiabetes3))
+```
+### Solution Q12.2
+```{r}
+# Create a new variable glucose_level which categorizes the variable glucose as "Low", "Normal", or "High"
+new_PimaIndiansDiabetes3 <- new_PimaIndiansDiabetes3 %>%
+  mutate(glucose_level = case_when(
+    glucose <= quantile(glucose, 0.25) ~ "Low",
+    glucose > quantile(glucose, 0.25) & glucose <= quantile(glucose, 0.75) ~ "Normal",
+    glucose > quantile(glucose, 0.75) ~ "High"
+  ))
+```
+### Solution Q12.3
+```{r}
+# Define the mean (mean_mass) and standard deviation (sd_mass) of the variable mass within each glucose_level category
+summary_table <- new_PimaIndiansDiabetes3 %>%
+  group_by(glucose_level) %>%
+  summarise(
+    mean_mass = mean(mass, na.rm = TRUE),
+    sd_mass = sd(mass, na.rm = TRUE)
+  ) %>%
+  # Round the values to the nearest tenth
+  mutate(
+    mean_mass = round(mean_mass, 1),
+    sd_mass = round(sd_mass, 1)
+  )
+
+# View the summary table
+summary_table
+```
 
 ## Question 13.
 
@@ -503,7 +835,48 @@ Note that the data points in Figure 13.1 are colored according to the  <tt>gluco
 
 
 ### Solution Q13.1
+```{r}
+# Create glucose_level as in the previous task
+new_PimaIndiansDiabetes3 <- new_PimaIndiansDiabetes3 %>%
+  mutate(glucose_level = case_when(
+    glucose <= quantile(glucose, 0.25) ~ "Low",
+    glucose > quantile(glucose, 0.25) & glucose <= quantile(glucose, 0.75) ~ "Normal",
+    glucose > quantile(glucose, 0.75) ~ "High"
+  ))
 
+# Create age_group variable
+new_PimaIndiansDiabetes3 <- new_PimaIndiansDiabetes3 %>%
+  mutate(age_group = case_when(
+    age < 30 ~ "Under 30",
+    age >= 30 & age < 40 ~ "30-39",
+    age >= 40 & age < 50 ~ "40-49",
+    age >= 50 ~ "50+"
+  ))
+
+# Generate the plot with boxplot for diabetes status and jittered points for glucose level
+ggplot(new_PimaIndiansDiabetes3, aes(x = age_group, y = mass)) +
+  # Boxplot for diabetes status with custom fill colors
+  geom_boxplot(aes(fill = diabetes), alpha = 0.5, outliers = FALSE) +
+  # Scatterplot layer with jitter for glucose_level visualization
+  geom_point(aes(color = glucose_level), position = position_jitter(width = 0.2), size = 1, alpha = 0.5) +
+  facet_wrap(~diabetes) +  # Facet by diabetes status
+  labs(
+    x = "age_roup",
+    y = "mass",
+    color = "Glucose Level",  # Update color legend title for glucose_level
+    fill = "Diabetes Status",  # Label for boxplot fill
+    caption = "Figure 13.1"
+  ) + 
+  theme(plot.caption.position = "plot", plot.caption = element_text(hjust = 0)) +
+  # Minimal theme for a clean look
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "right"
+  ) +
+  # Custom fill colors for diabetes status
+  scale_fill_manual(values = c("neg" = "yellow", "pos" = "purple"))
+```
 
 ## Question 14.
 
@@ -521,8 +894,44 @@ $$
 
 
 ### Solution Q14.1
+```{r}
+# Create age_adjusted_risk variable
+new_PimaIndiansDiabetes3 <- new_PimaIndiansDiabetes3 %>%
+  mutate(age_adjusted_risk = sqrt((0.5 * glucose + 0.3 * mass + 0.2 * pressure) / age))
+```
 ### Solution Q14.2
+```{r}
+# Perform a two-sample t-test on age_adjusted_risk across diabetes groups
+t_test_result <- t.test(age_adjusted_risk ~ diabetes, data = new_PimaIndiansDiabetes3)
 
+# Extract the necessary values from the t-test result
+mean_diff <- round(t_test_result$estimate[1] - t_test_result$estimate[2], 2)
+ci_lower <- round(t_test_result$conf.int[1], 2)
+ci_upper <- round(t_test_result$conf.int[2], 2)
+p_value <- round(t_test_result$p.value, 4)
+
+# 3. Generate the plot (Figure 14.1)
+ggplot(new_PimaIndiansDiabetes3, aes(x = diabetes, y = age_adjusted_risk, fill = diabetes)) +
+  # Boxplot for age_adjusted_risk by diabetes status
+  geom_boxplot(alpha = 0.5, outlier.size = 2, outlier.colour = "black") +
+  labs(
+    title = paste(
+      "Mean Difference: ", mean_diff, "\n",
+      "95% CI: ", ci_lower, " to ", ci_upper,
+      " P-Value: ", p_value
+    ),
+    x = "diabetes",
+    y = "age_adjusted_risk",
+    fill = "diabetes"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "right"
+  )+
+  # Custom fill colors for diabetes status
+  scale_fill_manual(values = c("neg" = "yellow", "pos" = "purple"))
+```
 
 ## Question 15.
 
@@ -531,8 +940,39 @@ $$
 2. Apply the function that you wrote in Q15.1 to the data frame (<tt>PimaIndiansDiabetes2</tt>), use the variable (<tt>diabetes</tt>) as the categorical variable and all the numerical variables in the data set. Print the <tt>mean</tt> of two numeric variables only (<tt>glucose</tt>, <tt>insulin</tt>).
 
 ### Solution Q15.1
+```{r}
+# Function to compute descriptive statistics for numeric variables across levels of a categorical variable
+compute_summary_stats <- function(data, group_col, numeric_cols) {
+  data %>%
+    group_by(.data[[group_col]]) %>%
+    summarise(across(all_of(numeric_cols), 
+                     list(
+                       mean = ~ mean(.x, na.rm = TRUE),
+                       median = ~ median(.x, na.rm = TRUE),
+                       sd = ~ sd(.x, na.rm = TRUE),
+                       IQR = ~ IQR(.x, na.rm = TRUE)
+                     ),
+                     .names = "{.col}_{.fn}")) %>%
+    ungroup()
+}
+```
 ### Solution Q15.2
+```{r}
+#  Get the list of numeric columns
+numeric_columns <- names(PimaIndiansDiabetes2)[sapply(PimaIndiansDiabetes2, is.numeric)]
 
+# Apply the function to the dataset
+summary_table <- compute_summary_stats(
+  data = PimaIndiansDiabetes2,
+  group_col = "diabetes",
+  numeric_cols = numeric_columns
+)
+
+# Select and print the mean of glucose and insulin only
+summary_table %>%
+  dplyr::select(matches("diabetes|glucose_mean|insulin_mean")) %>%
+  print()
+```
 
 
 ## Question 16.
@@ -545,9 +985,42 @@ $$
 3. Using the dataset created in Question Q16.2, create a new dataset <tt>selected_median_insulin</tt> which includes the variables <tt>age</tt>, <tt>pressure</tt>, <tt>insulin</tt>, <tt>pedigree</tt>, <tt>pregnant</tt>, <tt>diabetes</tt> variables. Display the last six observations of the dataset. 
 
 ### Solution Q16.1
-### Solution Q16.2
-### Solution Q16.3
+```{r}
+# Create the new dataset without missing values
+PimaIndiansDiabetes5 <- PimaIndiansDiabetes2 %>%
+  na.omit()
 
+# Check the number of observations in the new dataset
+num_observations <- nrow(PimaIndiansDiabetes5)
+print(paste("Number of observations in PimaIndiansDiabetes5:", num_observations))
+```
+### Solution Q16.2
+```{r}
+# Calculate the median insulin level from PimaIndiansDiabetes5
+median_insulin <- median(PimaIndiansDiabetes5$insulin, na.rm = TRUE)
+
+# Create a new dataset with the specified conditions
+median_insulin_data <- PimaIndiansDiabetes5 %>%
+  filter(
+    age > 40,               # Patients over 40 years old
+    pressure > 70,          # Blood pressure above 70
+    insulin > median_insulin # Insulin level above the median
+  )
+
+# Check the number of observations in the new dataset
+num_observations_median_insulin <- nrow(median_insulin_data)
+print(paste("Number of observations in median_insulin_data:", num_observations_median_insulin))
+```
+### Solution Q16.3
+```{r}
+# Create the final dataset with the selected variables
+selected_median_insulin <- median_insulin_data %>%
+  dplyr::select(age, pressure, insulin, pedigree, pregnant, diabetes)
+
+# Display the last six observations of the dataset
+print("Last six observations of selected_median_insulin:")
+tail(selected_median_insulin)
+```
 
 ## Question 17.
 
@@ -561,8 +1034,58 @@ In this question we use the dataset created in Q16.1 (<tt>PimaIndiansDiabetes5</
 3. Export Figure 17.1 that was produced in Q17.2 as an external file. Name the file <tt>3D_Bubble_Plot.html</tt> and make sure to add this exported file to the solutions folder. Note that in the PDF solution of the exam, Figure 17.1 will not be dynamic. 
 
 ### Solution Q17.1
+```{r}
+# Calculate the median mass and mean pedigree
+median_mass <- median(PimaIndiansDiabetes5$mass, na.rm = TRUE)
+mean_pedigree <- mean(PimaIndiansDiabetes5$pedigree, na.rm = TRUE)
+
+# Filter the dataset based on the conditions
+filtered_primadia5 <- PimaIndiansDiabetes5 %>%
+  filter(
+    mass > median_mass,       # Mass above the median
+    pedigree > mean_pedigree  # Pedigree above the mean
+  )
+
+# Check the number of observations in the filtered dataset
+num_observations_filtered <- nrow(filtered_primadia5)
+print(paste("Number of observations in filtered_primadia5:", num_observations_filtered))
+```
 ### Solution Q17.2
+```{r}
+# Load necessary libraries for dynamic plotting
+library(plotly)
+
+# Create the animated dynamic plot
+fig <- plot_ly(
+  data = filtered_primadia5,
+  x = ~mass,
+  y = ~pressure,
+  z = ~insulin,
+  color = ~age,
+  #colors = "Viridis",  # Use a color scale based on age
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(size = 5)
+) %>%
+  layout(
+    title = "3D Bubble Plot of Mass, Pressure, and Insulin",
+    scene = list(
+      xaxis = list(title = "Mass"),
+      yaxis = list(title = "Pressure"),
+      zaxis = list(title = "Insulin")
+    )
+  )
+
+# Show the plot
+fig
+```
 ### Solution Q17.3
+```{r}
+# Export the plot as an external HTML file
+htmlwidgets::saveWidget(fig, file = "3D_Bubble_Plot.html")
+
+print("The animated 3D bubble plot has been saved as '3D_Bubble_Plot.html'.")
+```
 
 ## Question 18.
 
@@ -584,13 +1107,128 @@ Create a new dataset, <tt>prima_data</tt>, without missing data data using <tt>P
 
 
 ### Solution Q18.1
-### Solution Q18.2
-### Solution Q18.3
-### Solution Q18.4
-### Solution Q18.5
-### Solution Q18.6
-### Solution Q18.7
+```{r}
+# Create prima_data without missing values
+prima_data <- PimaIndiansDiabetes2 %>%
+  na.omit()
 
+# Number of observations in prima_data
+num_observations <- nrow(prima_data)
+print(paste("Number of observations in prima_data:", num_observations))
+```
+### Solution Q18.2
+```{r}
+# Recode pregnant variable
+prima_data <- prima_data %>%
+  mutate(
+    pregnant_grouped = case_when(
+      pregnant == 0 ~ "0",
+      pregnant == 1 ~ "1",
+      pregnant == 2 ~ "2",
+      pregnant >= 3 ~ "3+"
+    )
+  )
+
+# Print the first 5 observations for pregnant == 2
+subset_pregnant_2 <- prima_data %>%
+  filter(pregnant_grouped == "2") %>%
+  head(5)
+
+print(subset_pregnant_2)
+```
+### Solution Q18.3
+```{r}
+# Calculate mean mass for each combination of pregnant_grouped and diabetes
+mean_mass_data <- prima_data %>%
+  group_by(pregnant_grouped, diabetes) %>%
+  summarise(mean_mass = mean(mass, na.rm = TRUE), .groups = "drop")
+
+# Dimensions of the dataset
+dim_mean_mass_data <- dim(mean_mass_data)
+print(paste("Dimensions of mean_mass_data:", paste(dim_mean_mass_data, collapse = " x ")))
+
+# Print the new dataset
+print(mean_mass_data)
+```
+### Solution Q18.4
+```{r}
+# Plot blood pressure vs. pregnancies
+ggplot(prima_data, aes(x = pregnant_grouped, y = pressure, color = diabetes)) +
+  geom_boxplot(outlier.shape = NA, alpha = 0.5) +
+  geom_jitter(position = position_jitter(width = 0.2), alpha = 0.5) +
+  labs(
+    title = "Figure 18.1: Blood Pressure vs. Pregnancies",
+    x = "Pregnancy Group",
+    y = "Blood Pressure",
+    color = "Diabetes Status"
+  ) +
+  theme_minimal()
+```
+### Solution Q18.5
+```{r}
+# Calculate mean and SD of age by pregnancy group
+age_summary <- prima_data %>%
+  group_by(pregnant_grouped) %>%
+  summarise(
+    mean_age = mean(age, na.rm = TRUE),
+    sd_age = sd(age, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Print the summary table
+print(age_summary)
+```
+### Solution Q18.6
+```{r}
+# Mean age at each pregnancy group (black dots)
+ggplot(prima_data, aes(x = pregnant_grouped, y = age)) +
+  geom_boxplot(alpha = 0.5, fill = "lightblue") +
+  stat_summary(
+    fun = mean,
+    geom = "point",
+    shape = 21,
+    size = 3,
+    fill = "black"
+  ) +
+  labs(
+    title = "Figure 18.2: Age Distribution by Pregnancy Group",
+    x = "Pregnancy Group",
+    y = "Age"
+  ) +
+  theme_minimal()
+```
+### Solution Q18.7
+```{r}
+# Create an interactive plot
+interactive_fig <- plot_ly(
+  data = prima_data,
+  x = ~pregnant_grouped,
+  y = ~pressure,
+  z = ~mass,
+  color = ~diabetes,
+  colors = c("red", "blue"),
+  type = "scatter3d",
+  mode = "markers",
+  marker = list(size = 5, opacity = 0.6)
+) %>%
+  layout(
+    title = "Figure 18.3: 3D Interactive Plot of Pregnancies, Pressure, and Mass",
+    scene = list(
+      xaxis = list(title = "Pregnancy Group"),
+      yaxis = list(title = "Blood Pressure"),
+      zaxis = list(title = "Mass")
+    )
+  )
+
+# Display the interactive plot
+interactive_fig
+
+# Save the interactive plot as an HTML file
+htmlwidgets::saveWidget(interactive_fig, file = "Figure_18_3D_Plot.html")
+
+print("The interactive 3D plot has been saved as 'Figure_18_3D_Plot.html'.")
+
+```
 
 ## Question 19.
 
@@ -604,8 +1242,73 @@ In this question we use the dataset <tt>PimaIndiansDiabetes5</tt> that was creat
 
 
 ### Solution Q19.1
-### Solution Q19.2
+```{r}
+# Get unique levels of the pregnant variable
+pregnancy_levels <- sort(unique(PimaIndiansDiabetes5$pregnant))
 
+# Initialize an empty data frame to store results
+correlation_results <- data.frame(
+  pregnant = integer(),
+  correlation = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Calculate correlation using a for loop
+for (level in pregnancy_levels) {
+  # Filter data for the current pregnancy level
+  temp_data <- PimaIndiansDiabetes5 %>%
+    filter(pregnant == level)
+  
+  # Calculate the correlation if there are at least 2 observations
+  if (nrow(temp_data) > 1) {
+    corr_value <- cor(temp_data$glucose, temp_data$pressure, use = "complete.obs")
+  } else {
+    corr_value <- NA
+  }
+  
+  # Append results to the data frame
+  correlation_results <- rbind(
+    correlation_results,
+    data.frame(pregnant = level, correlation = corr_value)
+  )
+}
+
+# Print the correlation results
+print(correlation_results)
+```
+### Solution Q19.2
+```{r}
+# Initialize a new data frame for the updated results
+correlation_results_no_na <- data.frame(
+  pregnant = integer(),
+  correlation = numeric(),
+  stringsAsFactors = FALSE
+)
+
+# Calculate correlation excluding pregnancies > 13
+for (level in pregnancy_levels) {
+  # Filter data for the current pregnancy level
+  temp_data <- PimaIndiansDiabetes5 %>%
+    filter(pregnant == level & pregnant <= 13)
+  
+  # Calculate the correlation if there are at least 2 observations
+  if (nrow(temp_data) > 1) {
+    corr_value <- cor(temp_data$glucose, temp_data$pressure, use = "complete.obs")
+  } else {
+    corr_value <- NA
+  }
+  
+  # Append results to the data frame
+  correlation_results_no_na <- rbind(
+    correlation_results_no_na,
+    data.frame(pregnant = level, correlation = corr_value)
+  )
+}
+
+# Print the updated correlation results
+print(correlation_results_no_na)
+
+```
 
 
 ## Question 20.
@@ -616,3 +1319,26 @@ In this question we use the dataset <tt>prima_data</tt> created in Question 18.1
 1. Produce the interactive plot which is shown Figure 20.1. You need to look at the HTML version of the exam to see the figure in an interactive format.
 
 ### Solution Q20.1
+```{r}
+library(GGally)
+# Create the pair plot using ggpairs
+pair_plot <- ggpairs(
+  data = prima_data,
+  columns = c("glucose", "mass", "pressure", "age"),  # Select variables for the plot
+  aes(color = diabetes, alpha = 0.6),  # Color by diabetes and add transparency
+  diag = list(continuous = wrap("densityDiag", alpha = 0.4)),  # Density plots on the diagonal
+  lower = list(continuous = wrap("smooth", method = "lm", se = TRUE)),  # Regression lines on lower panels
+  upper = list(continuous = wrap("cor", size = 4, stars = TRUE))  # Correlation coefficients on upper panels
+) +
+  theme_minimal() +  # Apply a clean theme
+  theme(legend.position = "top")  # Move legend to the top
+
+# Convert the ggplot object to an interactive plotly object
+interactive_plot <- ggplotly(pair_plot)
+
+# Save the interactive plot as an external HTML file
+htmlwidgets::saveWidget(interactive_plot, "3D_Bubble_Plot.html")
+
+# Print the interactive plot in the RStudio Viewer
+interactive_plot
+```
